@@ -1,0 +1,269 @@
+import pygame, sys, random
+from pygame.locals import *
+
+class Constants(object):
+  screen_width = 1920
+	screen_height = 1080
+	screen_hw = screen_width / 2
+	screen_hh = screen_height / 2
+
+#GUI METHODS
+def button(display, text = "Default Text", position = (Constants.screen_hw - 100, Constants.screen_hh - 100), width = 50, height = 25):
+	mouse_rect = Rect(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], 1, 1)
+	mouse_buttons = pygame.mouse.get_pressed()
+	button_rect = Rect(position[0], position[1], width, height)
+	button_surface = pygame.Surface((width, height))
+	button_font = pygame.font.SysFont("pericles", 16)
+	button_label = button_font.render(text, 12, (255, 255, 255))
+	label_rect = button_label.get_rect(center = button_rect.center)
+
+	if button_rect.contains(mouse_rect) and mouse_buttons[0] is True: 
+		button_surface.fill((50, 50, 50))
+		display.blit(button_surface, button_rect)
+		display.blit(button_label, label_rect)
+		return True
+	elif button_rect.contains(mouse_rect) and mouse_buttons[0] is False:
+		button_surface.fill((57, 57, 57))
+		display.blit(button_surface, button_rect)
+		display.blit(button_label, label_rect)
+		return False
+	else:
+		button_surface.fill((61, 61, 61))
+		display.blit(button_surface, button_rect)
+		display.blit(button_label, label_rect)
+		return False
+class Pallette(object):
+	def __init__(self, pos = (500, 450)):
+		self.colors = [(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))]
+		self.surface = pygame.Surface((10, 10))
+		self.pos = pos
+
+	def do(self, display):
+		for x in xrange(len(self.colors) - 1):
+			surface = self.surface
+			surface.fill(self.colors[x])
+			display.blit(self.surface, (self.pos[0] + 10 * x, self.pos[1]))
+
+class Button(object):
+	def __init__(self, text = "Default", rect = Rect(0, 0, 36, 12)):
+		self.button_rect = rect
+		self.font = pygame.font.SysFont("pericles", 14)
+		self.label = self.font.render(text, 12, (255, 255, 255))
+		self.label_rect = self.label.get_rect(center = self.button_rect.center)
+		self.button_surface = pygame.Surface((self.button_rect.w, self.button_rect.h))
+		self.state = "normal"
+
+	def do(self, screen):
+		if self.state == "normal":
+			self.button_surface.fill((61, 61, 61))
+			screen.blit(self.button_surface, self.button_rect)
+			screen.blit(self.label, self.label_rect)
+		if self.state == "hovering":
+			self.button_surface.fill((57, 57, 57))
+			screen.blit(self.button_surface, self.button_rect)
+			screen.blit(self.label, self.label_rect)
+		if self.state == "down":
+			self.button_surface.fill((45, 45, 45))
+			screen.blit(self.button_surface, self.button_rect)
+			screen.blit(self.label, self.label_rect)
+
+		mouse_rect = Rect(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], 1, 1)
+		if self.button_rect.contains(mouse_rect) and pygame.mouse.get_pressed()[0]:
+			self.state = "down"
+			return True
+		elif self.button_rect.contains(mouse_rect) and not pygame.mouse.get_pressed()[0]:
+			self.state = "hovering"
+			return False
+		else:
+			self.state = "normal"
+			return False
+
+#PROGRAM METHODS
+
+def setup_screen(screen_width, screen_height):
+	screen = pygame.display.set_mode((screen_width, screen_height), RESIZABLE)
+	return screen
+
+def update_screen(optional_rects = None):
+	if optional_rects == None:
+		pygame.display.update()
+	else:
+		pygame.display.update(optional_rects)
+
+def handle_closing():
+	for event in pygame.event.get():
+		if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
+			pygame.quit()
+			sys.exit()
+
+def draw_cursor(surface, screen):
+	pygame.draw.rect(screen, (50, 50, 50), surface.get_rect(center = pygame.mouse.get_pos()), 1)
+
+def draw_stroke(surface, screen, op_pos = None):
+	if op_pos is None:
+		screen.blit(surface, surface.get_rect(center = pygame.mouse.get_pos()))
+	else:
+		screen.blit(surface, surface.get_rect(center = op_pos))
+
+def flood_fill(draw_surface, x, y, oldColor, newColor):
+# assume surface is a 2D image and surface[x][y] is the color at x, y.
+	if not x > draw_surface.get_rect().w and not x < 0 and not y > draw_surface.get_rect().h and not y < 0:
+		if draw_surface.get_rect().contains(Rect(x, y, 1, 1)) is False or draw_surface.get_at((x, y)) != oldColor:
+			return
+	else:
+		return
+	if draw_surface.get_rect().contains(Rect(x, y, 1, 1)):    
+		draw_surface.set_at((x,y), newColor)
+		flood_fill(draw_surface,x + 1, y, oldColor, newColor) # right
+		flood_fill(draw_surface,x - 1, y, oldColor, newColor) # left
+		flood_fill(draw_surface,x, y + 1, oldColor, newColor) # down
+		flood_fill(draw_surface,x, y - 1, oldColor, newColor) # up
+
+def main():
+	pygame.init()
+	display = setup_screen(640, 480)
+	display.fill((10, 10, 10))
+	initial_image_size = [32, 32]
+	current_image_size = initial_image_size
+	draw_surface = pygame.Surface(initial_image_size)
+	draw_surface.fill((255, 255, 255))
+	brush = pygame.Surface((1, 1)).convert()
+	color = (0, 0, 0)
+	clear_button = Button("Clear", Rect(590, 0, 50, 20))
+	save_button = Button("Save", Rect(590, 50, 50, 20))
+	load_button = Button("Load", Rect(150, 460, 50, 20))
+	inc_brush = Button("Size+", Rect(590, 100, 50, 20))
+	dec_brush = Button("Size-", Rect(590, 150, 50, 20))
+	inc_r = Button("Red+", Rect(530, 200, 50, 20))
+	dec_r = Button("Red-", Rect(590, 200, 50, 20))
+	inc_g = Button("Green+", Rect(530, 250, 50, 20))
+	dec_g = Button("Green-", Rect(590, 250, 50, 20))
+	inc_b = Button("Blue+", Rect(530, 300, 50, 20))
+	dec_b = Button("Blue-", Rect(590, 300, 50, 20))
+	zoom_in = Button("Zoom+", Rect(530, 400, 50, 20))
+	zoom_out = Button("Zoom-", Rect(590, 400, 50, 20))
+	reset_brush_size = Button("Brush Reset Size", Rect(0, 430, 120, 20))
+	snap_pressed = False
+	line_pressed = False
+	snap_mode = False
+	line_mode = False
+	point_list = []
+	pallette = Pallette((400, 470))
+	pallette2 = Pallette((400, 460))
+
+
+	clock = pygame.time.Clock()
+	sys.setrecursionlimit(9500)
+	while True:
+		brush.fill(color)
+
+		current_size = Button("Current Brush Size: " + str(brush.get_rect().w) + " , " + str(brush.get_rect().h), Rect(320, 0, 200, 20))
+		snap_mode_but = Button("Snap Mode: " + str(snap_mode), Rect(0, 460, 120, 20))
+		line_mode_but = Button("Line Mode: " + str(line_mode), Rect(250, 460, 120, 20))
+		color_preview = pygame.Surface((50, 50))
+		pygame.draw.rect(display, (255, 255, 255), Rect(590, 340, color_preview.get_rect().w, color_preview.get_rect().h), 2)
+		color_preview.fill(color)
+
+		milliseconds = clock.tick(30)
+		update_screen()
+		handle_closing()
+		display.fill((45, 45, 45))
+		display.blit(draw_surface, (0, 0))
+		display.blit(color_preview, (590, 340))
+		pallette.do(display)
+		pallette2.do(display)
+
+		if pygame.mouse.get_pressed()[0]:
+			if snap_mode:
+				line_mode = False
+				for pixely in xrange(draw_surface.get_rect().h):
+					for pixelx in xrange(draw_surface.get_rect().w):
+						pixel_rect = Rect(pixelx * (draw_surface.get_rect().w / 32), pixely * (draw_surface.get_rect().h / 32), (draw_surface.get_rect().w / 32), (draw_surface.get_rect().h / 32))
+						mouse_rect = Rect(pygame.mouse.get_pos(), (1, 1))
+						if pixel_rect.contains(mouse_rect):
+							draw_surface.blit(brush, brush.get_rect(center = pixel_rect.center))
+			elif line_mode:
+				snap_mode = False
+				m_rect = Rect(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], 1, 1)
+				if draw_surface.get_rect().contains(m_rect):
+					point_list.append(pygame.mouse.get_pos())
+					if len(point_list) > 1:
+						pygame.draw.lines(draw_surface, color, False, point_list, brush.get_rect().w)
+			else:
+				draw_surface.blit(brush, brush.get_rect(center = pygame.mouse.get_pos()))
+		if pygame.mouse.get_pressed()[1]:
+			m_rect = Rect(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], 1, 1)
+			if draw_surface.get_rect().contains(m_rect):
+				flood_fill(draw_surface, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], (255, 255, 255), color)
+
+		if pygame.mouse.get_pressed()[2]:
+			m_rect = Rect(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], 1, 1)
+			if display.get_rect().contains(m_rect):
+				color = display.get_at(pygame.mouse.get_pos())
+
+		if clear_button.do(display):
+			draw_surface.fill((255, 255, 255))
+			point_list = []
+		if save_button.do(display):
+			pygame.image.save(draw_surface, "image.png")
+		if load_button.do(display):
+			draw_surface = pygame.image.load("image.png")
+			current_image_size = [draw_surface.get_rect().w, draw_surface.get_rect().h]
+			brush = pygame.transform.scale(brush, (int(draw_surface.get_rect().w / 32), int(draw_surface.get_rect().h / 32)))
+		if inc_brush.do(display):
+			brush = pygame.Surface((brush.get_rect().w + milliseconds / 20., brush.get_rect().h + milliseconds / 20.))
+		if dec_brush.do(display):
+			if brush.get_rect().w > 1 and brush.get_rect().h > 1:
+				brush = pygame.Surface((brush.get_rect().w - milliseconds / 20., brush.get_rect().h - milliseconds / 20.))
+		if inc_r.do(display):
+			if color[0] < 254:
+				color = (color[0] + milliseconds / 20., color[1], color[2])
+		if dec_r.do(display):
+			if color[0] > 2:
+				color = (color[0] - milliseconds / 20., color[1], color[2])
+		if inc_g.do(display):
+			if color[1] < 254:
+				color = (color[0], color[1]  + milliseconds / 20., color[2])
+		if dec_g.do(display):
+			if color[1] > 2:
+				color = (color[0], color[1]  - milliseconds / 20., color[2])
+		if inc_b.do(display):
+			if color[2] < 254:
+				color = (color[0], color[1], color[2] + milliseconds / 20.)
+		if dec_b.do(display):
+			if color[2] > 2:
+				color = (color[0], color[1], color[2] - milliseconds / 20.)
+		if zoom_in.do(display):
+			if current_image_size[0] < 256 and current_image_size[1] < 256:
+				current_image_size[0] += milliseconds / 20.
+				current_image_size[1] += milliseconds / 20.
+				draw_surface = pygame.transform.scale(draw_surface, (int(current_image_size[0]), int(current_image_size[1])))
+				brush = pygame.transform.scale(brush, (int(draw_surface.get_rect().w / 32), int(draw_surface.get_rect().h / 32)))
+		if zoom_out.do(display):
+			if current_image_size[0] > 8 and current_image_size[1] > 8:
+				current_image_size[0] -= milliseconds / 20.
+				current_image_size[1] -= milliseconds / 20.
+				draw_surface = pygame.transform.scale(draw_surface, (int(current_image_size[0]), int(current_image_size[1])))
+				brush = pygame.transform.scale(brush, (int(draw_surface.get_rect().w / 32), int(draw_surface.get_rect().h / 32)))
+		if reset_brush_size.do(display):
+			brush = pygame.transform.scale(brush, (int(draw_surface.get_rect().w / 32), int(draw_surface.get_rect().h / 32)))
+		if snap_mode_but.do(display) and not snap_pressed:
+			snap_mode = not snap_mode
+			snap_pressed = True
+		else:
+			snap_pressed = False
+		if line_mode_but.do(display) and not line_pressed:
+			line_mode = not line_mode
+			line_pressed = True
+		else:
+			line_pressed = False
+		if current_size.do(display):
+			pass
+
+		draw_cursor(brush, display)
+
+#PROGRAM METHODS END HERE
+
+#PROGRAM
+if __name__ == '__main__':
+	main()
